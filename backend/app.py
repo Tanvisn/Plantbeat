@@ -1,5 +1,5 @@
 import time
-from flask import Flask, Response, request, jsonify, session, redirect, url_for, render_template
+from flask import Flask, Response, request, jsonify, session, redirect, url_for, render_template, json
 from flask_cors import CORS #comment this on deployment
 from PIL import Image
 import torch
@@ -15,7 +15,7 @@ import os
 import pickle
 import bcrypt
 from pathlib import Path
-
+import json
 from werkzeug.utils import secure_filename
 from db import db_init, db
 from models import Img
@@ -282,21 +282,27 @@ def image():
             out.write(bytesOfImage)
         ans = predict(imgPath)
         remedy = "When planting, use only certified disease-free seed or treated seed. Remove and destroy all crop debris post-harvest. Sanitize the greenhouse between crop seasons. Use fans and avoid overhead watering to minimize leaf wetness. Also, stake and prune plants to increase ventilation."
-        user = mongo.db.users
-        user_id = user.insert({'filename': (timeStr+'.jpeg'), 'result': ans, 'remedy':remedy})
+        plant = mongo.db.plants
+        user_id = plant.insert({'filename': ('../../backend/uploads/' + timeStr +'.jpeg'), 'result': ans, 'remedy':remedy})
         return jsonify({'mess':True, 'result':ans, 'remedy':remedy})
+
+@app.route('/gallery', methods=['GET'])
+def gallery():
+    plants = mongo.db.plants
+    cursor = plants.find({})
+    return jsonify({'data':cursor})
 
 @app.route('/login', methods=['POST'])
 def login():
     users = mongo.db.users
-    login_user = users.find_one({'name' : request.form['username']})
+    login_user = users.find_one({'username' : request.form['username']})
 
     if login_user:
-        if bcrypt.hashpw(request.form['pass'].encode('utf-8'), login_user['password'].encode('utf-8')) == login_user['password'].encode('utf-8'):
+        if bcrypt.hashpw(request.form['password'].encode('utf-8'), login_user['password'].encode('utf-8')) == login_user['password'].encode('utf-8'):
             session['username'] = request.form['username']
-            return 'Logged in'
+            return jsonify({'res':'Logged in'}, 200)
 
-    return 'Invalid username/password combination'
+    return jsonify({'error':'Invalid username/password'})
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -309,8 +315,8 @@ def register():
             hashpass = bcrypt.hashpw(request.form['password'].encode('utf-8'), bcrypt.gensalt())
             users.insert({'username' : request.form['username'], 'password' : hashpass})
             session['username'] = request.form['username']
-            return 'registered succesfully'
+            return jsonify({'error':'Registered successfully'}, 200)
         
-        return 'That username already exists!'
+        return jsonify({'error':'Username already exists'})
 
     # return 'registered successfully'
