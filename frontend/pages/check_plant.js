@@ -94,7 +94,7 @@ export default function CheckPlant({ navigation }) {
     type === "image"
       ? ((route = "/image"), (content_type = "image/jpeg"))
       : ((route = "/video"), (content_type = "video/mp4"));
-    url = 'https://cee8-5-69-247-201.ngrok.io/save';
+    url = 'https://8fd5-2409-4042-2eac-3ada-c461-9d84-5648-190e.ngrok.io/save';
     let response = await FS.uploadAsync(url, mediaFile.uri, {
       headers: {
         "content-type": content_type,

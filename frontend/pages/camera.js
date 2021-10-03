@@ -87,7 +87,7 @@ export default function CameraPage() {
       ? ((route = "/image"), (content_type = "image/jpeg"))
       : ((route = "/video"), (content_type = "video/mp4"));
     // url = schema + host + ":" + port + route;
-    url = 'https://cee8-5-69-247-201.ngrok.io/save';
+    url = 'https://8fd5-2409-4042-2eac-3ada-c461-9d84-5648-190e.ngrok.io/save';
   
     let response = await FS.uploadAsync(url, mediaFile.uri, {
       headers: {
@@ -298,7 +298,7 @@ const SendFileToBackend = (uri) => {
   });
 
   // Perform a Post request to backend server by putting `form` in the Body of the request
-  fetch('https://88b2-5-69-247-201.ngrok.io/upload', {
+  fetch('https://8fd5-2409-4042-2eac-3ada-c461-9d84-5648-190e.ngrok.io/upload', {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
